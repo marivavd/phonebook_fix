@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\Users\Dell user\flutter"
+export "FLUTTER_ROOT=C:\src\flutter"
 export "FLUTTER_APPLICATION_PATH=C:\Users\Dell user\StudioProjects\phonebook"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"
