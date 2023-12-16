@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -58,21 +59,38 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Contact> contacts = [];
+  bool isGet = false;
 
   @override
   void initState() {
     super.initState();
-    Permission.contacts.request().then((value) {
-      if (value.isDenied || value.isRestricted || value.isPermanentlyDenied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Cancel')));
+    init().then((value) => null);
+  }
+
+  Future<void> init() async{
+    await refreshContacts;
+    FlutterNativeSplash.remove();
+    if (!isGet){
+      var value = await Permission.contacts.request();
+      if (value.isGranted){
+        refreshContacts();
       }
-      else if (value.isGranted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ok')));
-        FlutterContacts.getContacts(withProperties: true, withPhoto: true, withAccounts: true).then((value) => setState((){contacts = value;}));
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Denied')));
       }
-    });
+    }
+  }
+
+  Future<void> refreshContacts() async{
+    if (await Permission.contacts.isGranted) {
+      var newContacts = await FlutterContacts.getContacts(
+        withProperties: true, withPhoto: true, withAccounts: true);
+      setState(() {
+        contacts = newContacts;
+        isGet = true;
+      });
+    }
+
   }
 
   @override
@@ -84,28 +102,41 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 167, 220, 204),
-      body: SizedBox(
-        width: double.infinity,
-        child:
-          ListView.separated(
-            itemCount: contacts.length,
-            itemBuilder: (context, index){
-              var contact = contacts[index];
-              return Row(children: [Text(contact.displayName, style: TextStyle(fontSize: 24)),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    setState(() {});
-                  },
-                )]);
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Container(height: 2, width: double.infinity, color: Colors.black);
-            },
-            physics: const BouncingScrollPhysics(),
-          )
-      ),
-    );
+        backgroundColor: Color.fromARGB(255, 167, 220, 204),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: SizedBox(
+              width: double.infinity,
+              child: ListView.separated(
+                itemCount: contacts.length,
+                itemBuilder: (context, index) {
+                  var contact = contacts[index];
+                  return Row(children: [
+                    CircleAvatar(
+                        child: (contact.thumbnail != null) ?
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Image.memory(contact.thumbnail!)):
+                        const Icon(Icons.person)),
+                    Padding(
+                        padding: EdgeInsets.only(left: 15),
+                        child: Text(contact.displayName,
+                            style: TextStyle(fontSize: 24))),
+                    Expanded(
+                        child: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {});
+                      },
+                    ))
+                  ]);
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Container(
+                      height: 2, width: double.infinity, color: Colors.black);
+                },
+                physics: const BouncingScrollPhysics(),
+              )),
+        ));
   }
 }
