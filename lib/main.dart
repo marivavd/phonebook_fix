@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:phonebook/contact_form_adding.dart';
+import 'package:phonebook/contact_page.dart';
+import 'package:phonebook/contact_edit.dart';
 
 void main() {
   runApp(const MyApp());
@@ -102,6 +105,15 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Contact_Form(
+              onSave: (){refreshContacts();})
+          )
+          );
+        },
+      ),
         backgroundColor: Color.fromARGB(255, 167, 220, 204),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -111,26 +123,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: contacts.length,
                 itemBuilder: (context, index) {
                   var contact = contacts[index];
-                  return Row(children: [
-                    CircleAvatar(
-                        child: (contact.thumbnail != null) ?
-                        ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Image.memory(contact.thumbnail!)):
-                        const Icon(Icons.person)),
-                    Padding(
-                        padding: EdgeInsets.only(left: 15),
-                        child: Text(contact.displayName,
-                            style: TextStyle(fontSize: 24))),
-                    Expanded(
-                        child: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {});
-                      },
-                    ))
-                  ]);
-                },
+                  return GestureDetector(
+                    onTap: ()
+                    {Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Contact_Page(contact: contact)));},
+                      child: Row(children: [
+                        CircleAvatar(
+                            child: (contact.thumbnail != null) ?
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: Image.memory(contact.thumbnail!)):
+                            const Icon(Icons.person)),
+                        Padding(
+                            padding: EdgeInsets.only(left: 15),
+                            child: Text(contact.displayName,
+                                style: TextStyle(fontSize: 24))),
+                        Expanded(
+                            child: IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Contact_Edit(
+                                    contact: contact, onSave: (){refreshContacts();})
+                                )
+                                );
+                              },
+                            )),
+                        Expanded(
+                            child: IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {contact.delete().then((value) => refreshContacts());});
+                              },
+                            ))
+                      ]));
+                  },
                 separatorBuilder: (BuildContext context, int index) {
                   return Container(
                       height: 2, width: double.infinity, color: Colors.black);

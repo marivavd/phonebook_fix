@@ -62,7 +62,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - assets/raccoon.jpg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -99,12 +100,14 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 flutter_native_splash:
-  color: "#ffffff"
+  color: "#A7DCCC"
   image: assets/icon.png
+  background_color: "#A7DCCC"
 
   android_12:
+    color: "#A7DCCC"
     image: assets/icon.png
-    icon_background_color: "#ffffff"
+    background_color: "#A7DCCC"
     branding: assets/text.png
 
 
