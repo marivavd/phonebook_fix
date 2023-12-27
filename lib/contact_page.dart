@@ -1,47 +1,113 @@
 import 'package:flutter/material.dart';
-import 'package:phonebook/contact_edit.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:phonebook/contact_edit.dart';
 
-
-class Contact_Page extends StatefulWidget {
+class ContactPage extends StatefulWidget {
   final Contact contact;
 
-
-  const Contact_Page({super.key, required this.contact});
+  const ContactPage({super.key, required this.contact});
 
   @override
-  State<Contact_Page> createState() => _Contact_PageState();
+  State<ContactPage> createState() => _ContactPageState();
 }
-class _Contact_PageState extends State<Contact_Page> {
 
-
-
-    Widget build(BuildContext context) {
+class _ContactPageState extends State<ContactPage> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 167, 220, 204),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.edit),
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ContactEdit(
+                  onSave: (){},
+                  contact: widget.contact
+                )
+            )
+          );
+        },
+      ),
+      body: Column(
+        children: [
+          Stack(
             children: [
-              SizedBox(
-                  height: 300,
-                  width: double.infinity,
-                  child: (widget.contact.thumbnail != null) ?
-              ClipRRect(
-                  child: Image.memory(widget.contact.thumbnail!)):
-                  Image.asset("assets/raccoon.jpg"),),
-              Column(
-                children: [
-                  SizedBox(child:Row(children: [Text('Имя: ', style: TextStyle(fontSize: 20)), Text(widget.contact.name.first, style: TextStyle(fontSize: 20),)])),
-                  SizedBox(child:Row(children: [Text('Фамилия: ', style: TextStyle(fontSize: 20)), Text(widget.contact.name.last, style: TextStyle(fontSize: 20),)])),
-                  SizedBox(child:Row(children: [Text('Номер телефона: ', style: TextStyle(fontSize: 20)), Text(widget.contact.phones.first.number, style: TextStyle(fontSize: 20),)])),
-                  SizedBox(child:Row(children: [Text('Почта: ', style: TextStyle(fontSize: 20)), Text(widget.contact.emails.first.address, style: TextStyle(fontSize: 20),)])),],)
-
+              (widget.contact.thumbnail != null)
+                ? ClipRRect(child: Image.memory(widget.contact.photo!))
+                : Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 300,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const Icon(Icons.person, size: 150)
+                    ],
+                  ) ,
+              Positioned(
+                top: 42,
+                left: 12,
+                child: IconButton(
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                      Icons.arrow_back_ios,
+                      size: 30,
+                      color: Colors.white
+                  )
+                )
+              ),
             ],
           ),
-        )
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                const SizedBox(height: 22),
+                Row(
+                    children: [
+                      const Text('Имя: ', style: TextStyle(fontSize: 20)),
+                      Text(
+                        widget.contact.name.last,
+                        style: const TextStyle(fontSize: 20),
+                      )
+                    ]
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Text('Фамилия: ', style: TextStyle(fontSize: 20)),
+                    Text(
+                      widget.contact.name.first,
+                      style: const TextStyle(fontSize: 20),
+                    )
+                  ]
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Text('Номер телефона: ', style: TextStyle(fontSize: 20)),
+                    Text(
+                      widget.contact.phones[0].number,
+                      style: const TextStyle(fontSize: 20),
+                    )
+                  ]
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Text('Комментарий: ', style: TextStyle(fontSize: 20)),
+                    Text(
+                       widget.contact.notes[0].note,
+                      style: const TextStyle(fontSize: 20),
+                    )
+                  ]
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

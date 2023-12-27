@@ -4,7 +4,7 @@
     <application
         android:label="Phonebook"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
