@@ -76,13 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                  ContactPage(
-                    contact: Contact()
-                  )
-              )
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ContactEdit(
+                onSave: (){refreshContacts();})
+            )
             );
           },
         ),
@@ -114,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
-                                  ContactPage(contact: contact)
+                                  ContactPage(contact: contact, onSave: (){refreshContacts();},)
                               )
                           );
                         },

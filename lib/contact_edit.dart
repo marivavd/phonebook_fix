@@ -7,11 +7,11 @@ class ContactEdit extends StatefulWidget {
   bool isNew = false;
 
   ContactEdit({super.key, Contact? contact, required this.onSave}){
-    if (contact != null){
+    if (contact == null){
       this.contact = Contact();
+      isNew = true;
     }else{
       this.contact = contact!;
-      isNew = false;
     }
   }
 
@@ -27,10 +27,14 @@ class _ContactEditState extends State<ContactEdit> {
   @override
   void initState() {
     super.initState();
+    if (widget.isNew == false){
     firstNameController.text = widget.contact.name.first;
     lastNameController.text = widget.contact.name.last;
-    phoneController.text = widget.contact.phones[0].number;
-    commentController.text = widget.contact.notes[0].note;
+    if (widget.contact.phones.isNotEmpty){
+      phoneController.text = widget.contact.phones[0].number;
+    }
+    if (widget.contact.notes.isNotEmpty){
+    commentController.text = widget.contact.notes[0].note;}}
   }
 
   @override
@@ -73,13 +77,14 @@ class _ContactEditState extends State<ContactEdit> {
                 ),
                 onPressed: () async {
                   if (widget.isNew){
-                    await widget.contact.update();
-                  }else{
                     await widget.contact.insert();
+
+                  }else{
+                    await widget.contact.update();
                   }
                   setState(() {
-                    Navigator.of(context).pop();
                     widget.onSave();
+                    Navigator.of(context).pop();
                   });
                 },
                 child: const Text(
@@ -95,13 +100,25 @@ class _ContactEditState extends State<ContactEdit> {
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(children: [
           const SizedBox(height: 100),
-          getTextField(firstNameController, "Имя", (text) => widget.contact.name.first = text, TextInputType.name, 1),
+          getTextField( firstNameController, "Имя", (text) => widget.contact.name.first = text, TextInputType.name, 1),
           const SizedBox(height: 10),
-          getTextField(lastNameController, "Фамилия", (text) => widget.contact.name.first = text, TextInputType.name, 1),
+          getTextField(lastNameController, "Фамилия", (text) => widget.contact.name.last = text, TextInputType.name, 1),
           const SizedBox(height: 10),
-          getTextField(phoneController, "Номер телефона", (text) => widget.contact.phones.first.number = text, TextInputType.number, 1),
+          getTextField(phoneController, "Номер телефона", (text) =>
+          {if (widget.contact.phones.isNotEmpty){
+            widget.contact.phones.first.number = text
+          }
+          else{
+              widget.contact.phones.add(Phone(text))
+          }}, TextInputType.number, 1),
           const SizedBox(height: 10),
-          getTextField(commentController, "Комментарий", (text) => widget.contact.notes.first.note = text, TextInputType.text, 4),
+          getTextField(commentController, "Комментарий", (text) =>
+          {if (widget.contact.notes.isNotEmpty){
+            widget.contact.notes.first.note = text
+          }
+          else{
+              widget.contact.notes.add(Note(text))
+            }}, TextInputType.text, 4),
         ]),
       ),
     );

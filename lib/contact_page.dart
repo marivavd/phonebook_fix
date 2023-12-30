@@ -4,8 +4,9 @@ import 'package:phonebook/contact_edit.dart';
 
 class ContactPage extends StatefulWidget {
   final Contact contact;
+  final Function onSave;
 
-  const ContactPage({super.key, required this.contact});
+  const ContactPage({super.key, required this.contact, required this.onSave});
 
   @override
   State<ContactPage> createState() => _ContactPageState();
@@ -20,9 +21,9 @@ class _ContactPageState extends State<ContactPage> {
         onPressed: () {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => ContactEdit(
-                  onSave: (){},
-                  contact: widget.contact
-                )
+                  contact: widget.contact, onSave: (){setState(() {
+                widget.onSave();
+              });})
             )
           );
         },
@@ -69,7 +70,7 @@ class _ContactPageState extends State<ContactPage> {
                     children: [
                       const Text('Имя: ', style: TextStyle(fontSize: 20)),
                       Text(
-                        widget.contact.name.last,
+                        widget.contact.name.first,
                         style: const TextStyle(fontSize: 20),
                       )
                     ]
@@ -79,7 +80,7 @@ class _ContactPageState extends State<ContactPage> {
                   children: [
                     const Text('Фамилия: ', style: TextStyle(fontSize: 20)),
                     Text(
-                      widget.contact.name.first,
+                      widget.contact.name.last,
                       style: const TextStyle(fontSize: 20),
                     )
                   ]
@@ -88,8 +89,7 @@ class _ContactPageState extends State<ContactPage> {
                 Row(
                   children: [
                     const Text('Номер телефона: ', style: TextStyle(fontSize: 20)),
-                    Text(
-                      widget.contact.phones[0].number,
+                    Text(phoneNumber(),
                       style: const TextStyle(fontSize: 20),
                     )
                   ]
@@ -99,7 +99,7 @@ class _ContactPageState extends State<ContactPage> {
                   children: [
                     const Text('Комментарий: ', style: TextStyle(fontSize: 20)),
                     Text(
-                       widget.contact.notes[0].note,
+                       note(),
                       style: const TextStyle(fontSize: 20),
                     )
                   ]
@@ -110,5 +110,21 @@ class _ContactPageState extends State<ContactPage> {
         ],
       ),
     );
+  }
+  String phoneNumber(){
+    if (widget.contact.phones.isNotEmpty){
+      return widget.contact.phones.first.number;
+    }
+    else{
+      return '';
+    }
+  }
+  String note(){
+    if (widget.contact.notes.isNotEmpty){
+      return widget.contact.notes.first.note;
+    }
+    else{
+      return '';
+    }
   }
 }
